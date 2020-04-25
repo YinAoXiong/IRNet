@@ -36,6 +36,8 @@ class Grammar(object):
         self.type2id[C] = self.type_id
         self.type_id += 1
         self.type2id[T] = self.type_id
+        self.type_id+=1
+        self.type2id[V] = self.type_id
 
     def _init_grammar(self, Cls):
         """
@@ -195,6 +197,23 @@ class C(Action):
     def __repr__(self):
         return 'C(' + str(self.id_c) + ')'
 
+class V(Action):
+    """
+    Value
+    """
+    def __init__(self, id_c, parent=None):
+        super(V, self).__init__()
+        self.parent = parent
+        self.id_c = str(id_c).strip().strip('\"')
+        self.production = 'V'
+        self.table = None
+
+    def __str__(self):
+        return 'V(\"' + str(self.id_c) + '\")'
+
+    def __repr__(self):
+        return 'V(\"' + str(self.id_c) + '\")'
+
 
 class T(Action):
     """
@@ -298,21 +317,21 @@ class Filter(Action):
             # 0: "Filter 1"
             0: 'Filter and Filter Filter',
             1: 'Filter or Filter Filter',
-            2: 'Filter = A',
-            3: 'Filter != A',
-            4: 'Filter < A',
-            5: 'Filter > A',
-            6: 'Filter <= A',
-            7: 'Filter >= A',
-            8: 'Filter between A',
-            9: 'Filter like A',
-            10: 'Filter not_like A',
+            2: 'Filter = A V',
+            3: 'Filter != A V',
+            4: 'Filter < A V',
+            5: 'Filter > A V',
+            6: 'Filter <= A V',
+            7: 'Filter >= A V',
+            8: 'Filter between A V V',
+            9: 'Filter like A V',
+            10: 'Filter not_like A V',
             # now begin root
             11: 'Filter = A Root',
             12: 'Filter < A Root',
             13: 'Filter > A Root',
             14: 'Filter != A Root',
-            15: 'Filter between A Root',
+            15: 'Filter between A V Root',
             16: 'Filter >= A Root',
             17: 'Filter <= A Root',
             # now for In

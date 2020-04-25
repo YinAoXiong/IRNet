@@ -17,7 +17,7 @@ import copy
 from utils import load_dataSets
 
 sys.path.append("..")
-from src.rule.semQL import Root1, Root, N, A, C, T, Sel, Sup, Filter, Order
+from src.rule.semQL import Root1, Root, N, A,V, C, T, Sel, Sup, Filter, Order
 
 class Parser:
     def __init__(self):
@@ -98,6 +98,8 @@ class Parser:
                 question = sql['question']
                 self.sel_result.append(question)
                 print('column * table error')
+                print(sql['table_names'][sql['sql']['from']['table_units'][0][1]])
+                print(self.query)
                 return T(sql['sql']['from']['table_units'][0][1])
 
     def _parse_select(self, sql):
@@ -280,6 +282,15 @@ class Parser:
             result.append(self._parser_column0(sql, select))
         else:
             result.append(T(sql['col_table'][sql_condit[2][1][1]]))
+        # check for value
+
+        if 'V' in fil.production:
+            if not nest_query:
+                result.append(V(sql_condit[3]))
+            else:
+                result.append(V(sql_condit[4]))
+            if 'V V' in fil.production:
+                result.append(V(sql_condit[4]))
 
         # check for the nested value
         if type(sql_condit[3]) == dict:
@@ -318,6 +329,7 @@ class Parser:
 
     def full_parse(self, query):
         sql = query['sql']
+        self.query=query['query']
         nest_query = {}
         nest_query['names'] = query['names']
         nest_query['query_toks_no_value'] = ""
@@ -382,10 +394,10 @@ if __name__ == '__main__':
         if len(datas[i]['sql']['select'][1]) > 5:
             continue
         r = parser.full_parse(datas[i])
-        datas[i]['rule_label'] = " ".join([str(x) for x in r])
+        datas[i]['rule_label'] = "\t".join([str(x) for x in r])
         processed_data.append(datas[i])
 
     print('Finished %s datas and failed %s datas' % (len(processed_data), len(datas) - len(processed_data)))
     with open(args.output, 'w', encoding='utf8') as f:
-        f.write(json.dumps(processed_data))
+        f.write(json.dumps(processed_data,indent=4))
 

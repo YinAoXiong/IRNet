@@ -214,6 +214,6 @@ if __name__ == '__main__':
     process_result = process_datas(datas, args)
 
     with open(args.output, 'w') as f:
-        json.dump(datas, f)
+        json.dump(datas, f,indent=4)
 
 
